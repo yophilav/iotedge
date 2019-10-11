@@ -53,7 +53,7 @@ namespace Microsoft.Azure.Devices.Edge.Test.Common
             }
         }
 
-        protected async Task RunScriptAsync(
+        static public async Task RunScriptAsync(
             (string name, string args) command,
             CancellationToken token)
         {

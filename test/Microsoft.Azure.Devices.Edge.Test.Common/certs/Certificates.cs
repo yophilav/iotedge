@@ -3,6 +3,11 @@ namespace Microsoft.Azure.Devices.Edge.Test.Common.Certs
 {
     public class Certificates
     {
+        public static readonly ICertScriptRunner ScriptRunner = 
+            OsPlatform.IsWindows() ? 
+                (new Windows.CertScriptRunner() as ICertScriptRunner) :
+                (new Linux.CertScriptRunner() as ICertScriptRunner)   ;
+
         private string[] GetFileLocation(string deviceId)
         {
             return new[]
