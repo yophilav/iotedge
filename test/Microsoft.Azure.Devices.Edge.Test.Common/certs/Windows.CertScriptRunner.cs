@@ -66,5 +66,13 @@ namespace Microsoft.Azure.Devices.Edge.Test.Common.Certs.Windows
                 throw new System.ArgumentException($"File Not Found: {path}");
             }
         }
+
+        public async Task InstallRootCertificateAsync(string certPath, string keyPath, string password, string scriptPath, CancellationToken token)
+        {
+            string command = BuildCertCommand(
+                $"Install-RootCACertificate '{certPath}' '{keyPath}' 'rsa' {password}",
+                scriptPath);
+            await OsPlatform.RunScriptAsync(("powershell", command), token);
+        }
     }
 }

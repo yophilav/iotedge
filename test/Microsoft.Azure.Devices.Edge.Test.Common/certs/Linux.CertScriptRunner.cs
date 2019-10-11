@@ -18,17 +18,10 @@ namespace Microsoft.Azure.Devices.Edge.Test.Common.Certs.Linux
             await OsPlatform.RunScriptAsync(("bash", command), token);
 
             // Verify the cert and key were generated
-            string path = FixedPaths.DeviceIdentityCert.Cert(deviceId);
-            if(!File.Exists(path))
-            {
-                throw new System.ArgumentException($"Fail to generate: {path}");
-            }
-
-            path = FixedPaths.DeviceIdentityCert.Key(deviceId);
-            if(!File.Exists(path))
-            {
-                throw new System.ArgumentException($"Fail to generate: {path}");
-            }
+            OsPlatform.NormalizeFiles(new string[]{
+                FixedPaths.DeviceIdentityCert.Cert(deviceId), 
+                FixedPaths.DeviceIdentityCert.Key(deviceId)
+            }, scriptPath);
         }
 
         public async Task GenerateDeviceCaCertAsync(string deviceId, string scriptPath, CancellationToken token)
@@ -36,21 +29,22 @@ namespace Microsoft.Azure.Devices.Edge.Test.Common.Certs.Linux
             var command = BuildCertCommand($"create_edge_device_certificate '{deviceId}'", scriptPath);
             await OsPlatform.RunScriptAsync(("bash", command), token);
 
-            string path = FixedPaths.DeviceCaCert.Cert(deviceId);
-            if(!File.Exists(path))
-            {
-                throw new System.ArgumentException($"Fail to generate: {path}");
-            }
-            path = FixedPaths.DeviceCaCert.Key(deviceId);
-            if(!File.Exists(path))
-            {
-                throw new System.ArgumentException($"Fail to generate: {path}");
-            }
-            path = FixedPaths.DeviceCaCert.TrustCert(deviceId);
-            if(!File.Exists(path))
-            {
-                throw new System.ArgumentException($"File Not Found: {path}");
-            }
+            OsPlatform.NormalizeFiles(new string[]{
+                FixedPaths.DeviceCaCert.Cert(deviceId),
+                FixedPaths.DeviceCaCert.Key(deviceId),
+                FixedPaths.DeviceCaCert.TrustCert(deviceId)
+            }, scriptPath);
+        }
+
+        public async Task InstallRootCertificateAsync(string certPath, string keyPath, string password, string scriptPath, CancellationToken token)
+        {
+            var command = BuildCertCommand($"install_root_ca_from_files '{certPath}' '{keyPath}' '{password}'", scriptPath);
+            await OsPlatform.RunScriptAsync(("bash", command), token);
+
+            OsPlatform.NormalizeFiles(new string[]{
+                FixedPaths.RootCaCert.Cert,
+                FixedPaths.RootCaCert.Key
+            }, scriptPath);
         }
     }
 }
