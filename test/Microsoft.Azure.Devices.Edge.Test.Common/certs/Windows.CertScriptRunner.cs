@@ -24,18 +24,10 @@ namespace Microsoft.Azure.Devices.Edge.Test.Common.Certs.Windows
             var command = BuildCertCommand($"New-CACertsDevice '{deviceId}'", scriptPath);
             await OsPlatform.RunScriptAsync(("powershell", command), token);
 
-            // Verify the cert and key were generated
-            string path = FixedPaths.DeviceIdentityCert.Cert(deviceId);
-            if(!File.Exists(path))
-            {
-                throw new System.ArgumentException($"Fail to generate: {path}");
-            }
-
-            path = FixedPaths.DeviceIdentityCert.Key(deviceId);
-            if(!File.Exists(path))
-            {
-                throw new System.ArgumentException($"Fail to generate: {path}");
-            }
+            OsPlatform.NormalizeFiles(new string[]{
+                FixedPaths.DeviceIdentityCert.Cert(deviceId), 
+                FixedPaths.DeviceIdentityCert.Key(deviceId)
+            }, scriptPath);
 
             // BEARWASHERE -- Migrate this to 'Install once it's done
             // Windows requires all the certificates from root up to leaf to be installed.
@@ -50,21 +42,11 @@ namespace Microsoft.Azure.Devices.Edge.Test.Common.Certs.Windows
                 scriptPath);
             await OsPlatform.RunScriptAsync(("powershell", command), token);
 
-            string path = FixedPaths.DeviceCaCert.Cert(deviceId);
-            if(!File.Exists(path))
-            {
-                throw new System.ArgumentException($"Fail to generate: {path}");
-            }
-            path = FixedPaths.DeviceCaCert.Key(deviceId);
-            if(!File.Exists(path))
-            {
-                throw new System.ArgumentException($"Fail to generate: {path}");
-            }
-            path = FixedPaths.DeviceCaCert.TrustCert(deviceId);
-            if(!File.Exists(path))
-            {
-                throw new System.ArgumentException($"File Not Found: {path}");
-            }
+             OsPlatform.NormalizeFiles(new string[]{
+                FixedPaths.DeviceCaCert.Cert(deviceId),
+                FixedPaths.DeviceCaCert.Key(deviceId),
+                FixedPaths.DeviceCaCert.TrustCert(deviceId)
+            }, scriptPath);
         }
 
         public async Task InstallRootCertificateAsync(string certPath, string keyPath, string password, string scriptPath, CancellationToken token)
@@ -73,6 +55,11 @@ namespace Microsoft.Azure.Devices.Edge.Test.Common.Certs.Windows
                 $"Install-RootCACertificate '{certPath}' '{keyPath}' 'rsa' {password}",
                 scriptPath);
             await OsPlatform.RunScriptAsync(("powershell", command), token);
+
+            OsPlatform.NormalizeFiles(new string[]{
+                FixedPaths.RootCaCert.Cert,
+                FixedPaths.RootCaCert.Key
+            }, scriptPath);
         }
     }
 }

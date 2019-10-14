@@ -17,7 +17,6 @@ namespace Microsoft.Azure.Devices.Edge.Test.Common.Certs.Linux
             var command = BuildCertCommand($"create_device_certificate '{deviceId}'", scriptPath);
             await OsPlatform.RunScriptAsync(("bash", command), token);
 
-            // Verify the cert and key were generated
             OsPlatform.NormalizeFiles(new string[]{
                 FixedPaths.DeviceIdentityCert.Cert(deviceId), 
                 FixedPaths.DeviceIdentityCert.Key(deviceId)
