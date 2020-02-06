@@ -219,6 +219,18 @@
         "reportMetadataList": {
           "reportMetadata1": {
             "TestReportType": "ErrorReport"
+          },
+          "reportMetadata2": {
+            "TestReportType": "EdgeHubRestartDirectMethodReport",
+            "TestOperationResultType": "EdgeHubRestartDirectMethod",
+            "SenderSource": "edgeHubRestartTester1.EdgeHubRestartDirectMethod",
+            "ReceiverSource": "directMethodReceiver1.receive"
+          },
+          "reportMetadata3": {
+            "TestReportType": "EdgeHubRestartMessageReport",
+            "TestOperationResultType": "EdgeHubRestartMessage",
+            "SenderSource": "edgeHubRestartTester1.EdgeHubRestartMessage",
+            "ReceiverSource": "relayer1.receive"
           }
         }
       }
