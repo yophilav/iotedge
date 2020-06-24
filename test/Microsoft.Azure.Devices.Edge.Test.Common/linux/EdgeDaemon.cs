@@ -56,6 +56,7 @@ namespace Microsoft.Azure.Devices.Edge.Test.Common.Linux
                     string[] platformInfo = await Process.RunAsync("lsb_release", "-sir", token);
                     string os = platformInfo[0].Trim();
                     string version = platformInfo[1].Trim();
+                    string packageTool = "apt-get";
                     switch (os)
                     {
                         case "Ubuntu":
@@ -65,6 +66,16 @@ namespace Microsoft.Azure.Devices.Edge.Test.Common.Linux
                             os = "debian";
                             version = "stretch";
                             break;
+                        case "CentOS":
+                            os = os.ToLower();
+                            version = version.Split('.')[0];
+                            packageTool = "yum";
+
+                            if(version != "7")
+                            {
+                                throw new NotImplementedException($"Don't know how to install daemon on operating system '{os} {version}'");
+                            }
+                            break;
                         default:
                             throw new NotImplementedException($"Don't know how to install daemon on operating system '{os}'");
                     }
@@ -73,8 +84,8 @@ namespace Microsoft.Azure.Devices.Edge.Test.Common.Linux
                     {
                         $"curl https://packages.microsoft.com/config/{os}/{version}/multiarch/prod.list > /etc/apt/sources.list.d/microsoft-prod.list",
                         "curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/microsoft.gpg",
-                        "apt-get update",
-                        "apt-get install --yes iotedge"
+                        $"{packageTool} update",
+                        $"{packageTool} install --yes iotedge"
                     };
                 });
 
