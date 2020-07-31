@@ -6,6 +6,7 @@ namespace Microsoft.Azure.Devices.Edge.Test.Common
     using System.Threading;
     using System.Threading.Tasks;
     using RunProcessAsTask;
+    using Serilog;
 
     public class Process
     {
@@ -24,6 +25,8 @@ namespace Microsoft.Azure.Devices.Edge.Test.Common
                 {
                     throw new Win32Exception(result.ExitCode, $"{string.Join("\n", result.StandardOutput)}\n\n'{name}' failed with: {string.Join("\n", result.StandardError)}");
                 }
+
+                Log.Information($"Running: {name} {args}\nOutput: {string.Join("\n", result.StandardOutput)}\n");
 
                 return result.StandardOutput;
             }

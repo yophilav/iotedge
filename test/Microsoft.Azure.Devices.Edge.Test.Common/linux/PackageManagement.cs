@@ -53,7 +53,7 @@ namespace Microsoft.Azure.Devices.Edge.Test.Common.Linux
                     "pathToSystemdConfig=$(systemctl cat iotedge | head -n 1)",
                     "sed 's/=on-failure/=no/g' ${pathToSystemdConfig#?} > ~/override.conf",
                     "sudo mv -f ~/override.conf ${pathToSystemdConfig#?}",
-                    "sudo systemctl daemon-reload"
+                    "sudo systemctl daemon-reload && exit 0;"
                 },
                 _ => throw new NotImplementedException($"Don't know how to install daemon on for '.{this.packageExtension}'"),
             };
@@ -79,7 +79,7 @@ namespace Microsoft.Azure.Devices.Edge.Test.Common.Linux
                 "pathToSystemdConfig=$(systemctl cat iotedge | head -n 1)",
                 "sed 's/=on-failure/=no/g' ${pathToSystemdConfig#?} > ~/override.conf",
                 "sudo mv -f ~/override.conf ${pathToSystemdConfig#?}",
-                "sudo systemctl daemon-reload"
+                "sudo systemctl daemon-reload && exit 0"
             },
             _ => throw new NotImplementedException($"Don't know how to install daemon on for '.{this.packageExtension}'"),
         };
