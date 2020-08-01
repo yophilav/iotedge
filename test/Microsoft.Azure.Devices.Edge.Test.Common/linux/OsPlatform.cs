@@ -34,7 +34,10 @@ namespace Microsoft.Azure.Devices.Edge.Test.Common.Linux
         {
             var command = BuildCertCommand($"create_device_certificate '{deviceId}'", scriptPath);
             await this.RunScriptAsync(("bash", command), token);
-            return new IdCertificates(deviceId, scriptPath);
+            IdCertificates idCert = new IdCertificates(deviceId, scriptPath);
+            // BEARWASHERE -- Figure out why it doesn't work
+            await Process.RunAsync("chown", $"iotedge {idCert.KeyPath} {idCert.CertificatePath}", token);
+            return idCert;
         }
 
         public async Task<CaCertificates> GenerateCaCertificatesAsync(string deviceId, string scriptPath, CancellationToken token)
