@@ -46,5 +46,10 @@ namespace Microsoft.Azure.Devices.Routing.Core
         /// Set the expiry time for messages in the store
         /// </summary>
         void SetTimeToLive(TimeSpan timeToLive);
+
+        /// <summary>
+        /// Get queue length of a given endpoint
+        /// </summary>
+        ulong GetQueueLength(string endpointId);
     }
 }

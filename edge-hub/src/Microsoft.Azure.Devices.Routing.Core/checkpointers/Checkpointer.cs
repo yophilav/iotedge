@@ -68,8 +68,18 @@ namespace Microsoft.Azure.Devices.Routing.Core.Checkpointers
             return checkpointer;
         }
 
+        public void Propose(IMessage message, ulong queueLength)
+        {
+            this.Proposed = Math.Max(message.Offset, this.Proposed);
+            Metrics.SetQueueLength(this);
+            min(
+                checkpointData.Proposed - checkpointData.Offset,
+                this.messageStore.endpointQueueLength[endpointSequentialStore.Key]);
+        }
+
         public void Propose(IMessage message)
         {
+            // BEARWASHERE -- Update this metric
             this.Proposed = Math.Max(message.Offset, this.Proposed);
             Metrics.SetQueueLength(this);
         }

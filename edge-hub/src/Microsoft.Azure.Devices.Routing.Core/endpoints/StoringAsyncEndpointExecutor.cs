@@ -68,7 +68,8 @@ namespace Microsoft.Azure.Devices.Routing.Core.Endpoints
                     ICheckpointer checkpointer = snapshot[priority].Checkpointer;
 
                     IMessage storedMessage = await this.messageStore.Add(GetMessageQueueId(this.Endpoint.Id, priority), message, timeToLiveSecs);
-                    checkpointer.Propose(storedMessage);
+                    // BEARWASHERE -- Pass the metric here
+                    checkpointer.Propose(storedMessage, this.messageStore.GetQueueLength(this.Endpoint.Id));
                     Events.AddMessageSuccess(this, storedMessage.Offset, priority, timeToLiveSecs);
                 }
 
@@ -163,6 +164,8 @@ namespace Microsoft.Azure.Devices.Routing.Core.Endpoints
 
                     // Create a message queue in the store for every priority we have
                     await this.messageStore.AddEndpoint(id);
+
+                    // BEARWASHERE -- Checkpoint creation
 
                     // Create a checkpointer and a FSM for every message queue
                     ICheckpointer checkpointer = await this.checkpointerFactory.CreateAsync(id, this.Endpoint.Id, priority);

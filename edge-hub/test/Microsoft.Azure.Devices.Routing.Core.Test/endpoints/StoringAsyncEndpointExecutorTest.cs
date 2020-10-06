@@ -483,6 +483,7 @@ namespace Microsoft.Azure.Devices.Routing.Core.Test.Endpoints
         class TestMessageStore : IMessageStore
         {
             readonly ConcurrentDictionary<string, TestMessageQueue> endpointQueues = new ConcurrentDictionary<string, TestMessageQueue>();
+            readonly ConcurrentDictionary<string, ulong> endpointQueueLength = new ConcurrentDictionary<string, ulong>();;
 
             public void Dispose()
             {
@@ -490,6 +491,11 @@ namespace Microsoft.Azure.Devices.Routing.Core.Test.Endpoints
 
             public async Task<IMessage> Add(string endpointId, IMessage message, uint _)
             {
+                this.endpointQueueLength.AddOrUpdate(
+                    endpointId,
+                    1UL,
+                    (key,val) => ++val);
+
                 TestMessageQueue queue = this.GetQueue(endpointId);
                 long offset = await queue.Add(message);
                 return new Message(
@@ -508,17 +514,31 @@ namespace Microsoft.Azure.Devices.Routing.Core.Test.Endpoints
 
             public Task AddEndpoint(string endpointId)
             {
+                this.endpointQueueLength.TryAdd(endpointId, 0UL);
                 this.endpointQueues[endpointId] = new TestMessageQueue();
                 return Task.CompletedTask;
             }
 
             public Task RemoveEndpoint(string endpointId)
             {
+                ulong queueLength = 0;
+                this.endpointQueueLength.TryRemove(endpointId, out queueLength);
                 this.endpointQueues.Remove(endpointId, out TestMessageQueue _);
                 return Task.CompletedTask;
             }
 
             public void SetTimeToLive(TimeSpan timeToLive) => throw new NotImplementedException();
+
+            public ulong GetQueueLength(string endpointId)
+            {
+                ulong queueLength = 0;
+                if (this.endpointQueueLength.TryGetValue(endpointId, out queueLength))
+                {
+                    return queueLength;
+                }
+
+                return ulong.MaxValue;
+            }
 
             public List<IMessage> GetReceivedMessagesForEndpoint(string endpointId) => this.GetQueue(endpointId).Queue;
 

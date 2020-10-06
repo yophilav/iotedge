@@ -58,6 +58,17 @@ namespace Microsoft.Azure.Devices.Edge.Hub.Core.Storage
             Events.TtlUpdated(timeSpan);
         }
 
+        public ulong GetQueueLength(string endpointId)
+        {
+            ulong queueLength = 0;
+            if (this.endpointQueueLength.TryGetValue(endpointId, out queueLength))
+            {
+                return queueLength;
+            }
+
+            return ulong.MaxValue;
+        }
+
         public async Task AddEndpoint(string endpointId)
         {
             CheckpointData checkpointData = await this.checkpointStore.GetCheckpointDataAsync(endpointId, CancellationToken.None);
@@ -289,6 +300,13 @@ namespace Microsoft.Azure.Devices.Edge.Hub.Core.Storage
 
                             Events.CleanupTaskStarted(endpointSequentialStore.Key);
                             CheckpointData checkpointData = await this.messageStore.checkpointStore.GetCheckpointDataAsync(endpointSequentialStore.Key, CancellationToken.None);
+
+                            // BEARWASHERE -- Comment
+                            // trun (checkpointData.Proposed - checkpointData.Offset) into a method
+                            // min(
+                            //     checkpointData.Proposed - checkpointData.Offset,
+                            //     this.messageStore.endpointQueueLength[endpointSequentialStore.Key]);
+
                             ISequentialStore<MessageRef> sequentialStore = endpointSequentialStore.Value;
                             Events.CleanupCheckpointState(endpointSequentialStore.Key, checkpointData);
                             int cleanupEntityStoreCount = 0;
