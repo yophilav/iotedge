@@ -38,6 +38,7 @@ namespace Microsoft.Azure.Devices.Edge.Hub.Core.Storage
         readonly IStoreProvider storeProvider;
         readonly long messageCount = 0;
         TimeSpan timeToLive;
+        readonly ConcurrentDictionary<string, ulong> endpointQueueLength;
 
         public MessageStore(IStoreProvider storeProvider, ICheckpointStore checkpointStore, TimeSpan timeToLive, bool checkEntireQueueOnCleanup = false)
         {
@@ -47,6 +48,7 @@ namespace Microsoft.Azure.Devices.Edge.Hub.Core.Storage
             this.timeToLive = timeToLive;
             this.checkpointStore = Preconditions.CheckNotNull(checkpointStore, nameof(checkpointStore));
             this.messagesCleaner = new CleanupProcessor(this, checkEntireQueueOnCleanup);
+            this.endpointQueueLength = new ConcurrentDictionary<string, ulong>();
             Events.MessageStoreCreated();
         }
 
@@ -62,6 +64,7 @@ namespace Microsoft.Azure.Devices.Edge.Hub.Core.Storage
             ISequentialStore<MessageRef> sequentialStore = await this.storeProvider.GetSequentialStore<MessageRef>(endpointId, checkpointData.Offset + 1);
             if (this.endpointSequentialStores.TryAdd(endpointId, sequentialStore))
             {
+                this.endpointQueueLength.TryAdd(endpointId, 0UL);
                 Events.SequentialStoreAdded(endpointId);
             }
         }
@@ -70,6 +73,12 @@ namespace Microsoft.Azure.Devices.Edge.Hub.Core.Storage
         {
             if (this.endpointSequentialStores.TryRemove(endpointId, out ISequentialStore<MessageRef> sequentialStore))
             {
+                ulong queueLength = 0;
+                if (this.endpointQueueLength.TryRemove(endpointId, out queueLength))
+                {
+                    Events.QueueLengthRemoved(endpointId, queueLength);
+                }
+
                 await this.storeProvider.RemoveStore(sequentialStore);
                 Events.SequentialStoreRemoved(endpointId);
             }
@@ -101,7 +110,15 @@ namespace Microsoft.Azure.Devices.Edge.Hub.Core.Storage
             {
                 await this.messageEntityStore.PutOrUpdate(
                     edgeMessageId,
-                    new MessageWrapper(message),
+                    new Func<MessageWrapper>(
+                        () =>
+                        {
+                            this.endpointQueueLength.AddOrUpdate(
+                                endpointId,
+                                1UL,
+                                (key,val) => ++val);
+                            return new MessageWrapper(message);
+                        })(),
                     (m) =>
                     {
                         m.RefCount++;
@@ -120,6 +137,8 @@ namespace Microsoft.Azure.Devices.Edge.Hub.Core.Storage
             }
             catch (Exception)
             {
+                ulong queueLength = 0;
+                this.endpointQueueLength.TryRemove(endpointId, out queueLength);
                 // If adding the message to the SequentialStore throws, then remove the message from the EntityStore as well, so that there is no leak.
                 await this.messageEntityStore.Remove(edgeMessageId);
                 throw;
@@ -310,6 +329,11 @@ namespace Microsoft.Azure.Devices.Edge.Hub.Core.Storage
                                         this.expiredCounter.Increment(1, new[] { "ttl_expiry", message?.Message.GetSenderId(), message?.Message.GetOutput(), bool.TrueString } );
                                     }
 
+                                    this.messageStore.endpointQueueLength.AddOrUpdate(
+                                        endpointSequentialStore.Key,
+                                        0UL,
+                                        (key,val) => --val);
+
                                     await this.messageStore.messageEntityStore.Remove(messageRef.EdgeMessageId);
                                     cleanupEntityStoreCount++;
                                 }
@@ -392,7 +416,8 @@ namespace Microsoft.Azure.Devices.Edge.Hub.Core.Storage
                 ObtainedNextBatch,
                 CleanupCheckpointState,
                 MessageAdded,
-                ErrorGettingMessagesBatch
+                ErrorGettingMessagesBatch,
+                QueueLengthRemoved
             }
 
             public static void MessageStoreCreated()
@@ -449,6 +474,11 @@ namespace Microsoft.Azure.Devices.Edge.Hub.Core.Storage
             internal static void SequentialStoreRemoved(string endpointId)
             {
                 Log.LogDebug((int)EventIds.SequentialStoreRemoved, $"Removed sequential store for endpoint {endpointId}");
+            }
+
+            internal static void QueueLengthRemoved(string endpointId, ulong queueLength)
+            {
+                Log.LogDebug((int)EventIds.QueueLengthRemoved, $"Removed queue length tracker for endpoint {endpointId} with {queueLength} messages");
             }
 
             internal static void MessageNotFound(string edgeMessageId)
