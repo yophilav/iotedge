@@ -68,20 +68,11 @@ namespace Microsoft.Azure.Devices.Routing.Core.Checkpointers
             return checkpointer;
         }
 
-        public void Propose(IMessage message, ulong queueLength)
-        {
-            this.Proposed = Math.Max(message.Offset, this.Proposed);
-            Metrics.SetQueueLength(this);
-            min(
-                checkpointData.Proposed - checkpointData.Offset,
-                this.messageStore.endpointQueueLength[endpointSequentialStore.Key]);
-        }
-
         public void Propose(IMessage message)
         {
-            // BEARWASHERE -- Update this metric
             this.Proposed = Math.Max(message.Offset, this.Proposed);
-            Metrics.SetQueueLength(this);
+            // BEARASHERE -- Propose() -- move metric out from here
+            // Metrics.SetQueueLength(this);
         }
 
         public bool Admit(IMessage message)
@@ -121,7 +112,8 @@ namespace Microsoft.Azure.Devices.Routing.Core.Checkpointers
                 this.LastFailedRevivalTime = lastFailedRevivalTime;
                 this.UnhealthySince = unhealthySince;
                 await this.store.SetCheckpointDataAsync(this.Id, new CheckpointData(offset, this.LastFailedRevivalTime, this.UnhealthySince), token);
-                Metrics.SetQueueLength(this);
+                // BEARWASHERE -- CommitAsync -- Move metric up from here.
+                //Metrics.SetQueueLength(this);
             }
 
             Events.CommitFinished(this);
@@ -206,14 +198,21 @@ namespace Microsoft.Azure.Devices.Routing.Core.Checkpointers
             }
         }
 
-        static class Metrics
-        {
-            static readonly IMetricsGauge QueueLength = EdgeMetrics.Instance.CreateGauge(
-                "queue_length",
-                "Number of messages pending to be processed for the endpoint",
-                new List<string> { "endpoint", "priority", MetricsConstants.MsTelemetry });
+        // BEARWASHERE -- To be removed
+        // static class Metrics
+        // {
+        //     static readonly IMetricsGauge QueueLength = EdgeMetrics.Instance.CreateGauge(
+        //         "queue_length",
+        //         "Number of messages pending to be processed for the endpoint",
+        //         new List<string> { "endpoint", "priority", MetricsConstants.MsTelemetry });
 
-            public static void SetQueueLength(Checkpointer checkpointer) => QueueLength.Set(checkpointer.Proposed - checkpointer.Offset, new[] { checkpointer.EndpointId, checkpointer.Priority, bool.TrueString });
-        }
+        //     public static void SetQueueLength(Checkpointer checkpointer, ulong queueLength) =>
+        //         QueueLength.Set(
+        //             Math.Min(
+        //                 (ulong)checkpointer.Proposed - (ulong)checkpointer.Offset,
+        //                 queueLength),
+        //             new[] { checkpointer.EndpointId, checkpointer.Priority, bool.TrueString });
+        //     public static void SetQueueLength(Checkpointer checkpointer) => QueueLength.Set(checkpointer.Proposed - checkpointer.Offset, new[] { checkpointer.EndpointId, checkpointer.Priority, bool.TrueString });
+        // }
     }
 }

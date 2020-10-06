@@ -301,11 +301,7 @@ namespace Microsoft.Azure.Devices.Edge.Hub.Core.Storage
                             Events.CleanupTaskStarted(endpointSequentialStore.Key);
                             CheckpointData checkpointData = await this.messageStore.checkpointStore.GetCheckpointDataAsync(endpointSequentialStore.Key, CancellationToken.None);
 
-                            // BEARWASHERE -- Comment
-                            // trun (checkpointData.Proposed - checkpointData.Offset) into a method
-                            // min(
-                            //     checkpointData.Proposed - checkpointData.Offset,
-                            //     this.messageStore.endpointQueueLength[endpointSequentialStore.Key]);
+                            // BEARWASHERE -- CleanupQueue
 
                             ISequentialStore<MessageRef> sequentialStore = endpointSequentialStore.Value;
                             Events.CleanupCheckpointState(endpointSequentialStore.Key, checkpointData);

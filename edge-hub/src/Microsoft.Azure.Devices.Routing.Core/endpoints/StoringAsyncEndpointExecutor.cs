@@ -13,11 +13,13 @@ namespace Microsoft.Azure.Devices.Routing.Core.Endpoints
     using Microsoft.Azure.Devices.Edge.Util;
     using Microsoft.Azure.Devices.Edge.Util.Concurrency;
     using Microsoft.Azure.Devices.Edge.Util.Metrics;
+    using Microsoft.Azure.Devices.Routing.Core.Checkpointers;
     using Microsoft.Azure.Devices.Routing.Core.Endpoints.StateMachine;
     using Microsoft.Extensions.Logging;
     using Nito.AsyncEx;
     using static System.FormattableString;
     using AsyncLock = Microsoft.Azure.Devices.Edge.Util.Concurrency.AsyncLock;
+    using EdgeMetrics = Microsoft.Azure.Devices.Edge.Util.Metrics.Metrics;
 
     public class StoringAsyncEndpointExecutor : IEndpointExecutor
     {
@@ -31,6 +33,17 @@ namespace Microsoft.Azure.Devices.Routing.Core.Endpoints
         readonly EndpointExecutorConfig config;
         AtomicReference<ImmutableDictionary<uint, EndpointExecutorFsm>> prioritiesToFsms;
         EndpointExecutorFsm lastUsedFsm;
+        static readonly IMetricsGauge QueueLength = EdgeMetrics.Instance.CreateGauge(
+            "queue_length",
+            "Number of messages pending to be processed for the endpoint",
+            new List<string> { "endpoint", "priority", MetricsConstants.MsTelemetry });
+
+        public static void SetQueueLengthMetric(Checkpointer checkpointer, ulong queueLength) =>
+            QueueLength.Set(
+                Math.Min(
+                    (ulong)checkpointer.Proposed - (ulong)checkpointer.Offset,
+                    queueLength),
+                new[] { checkpointer.EndpointId, checkpointer.Priority, bool.TrueString });
 
         public StoringAsyncEndpointExecutor(
             Endpoint endpoint,
@@ -68,8 +81,9 @@ namespace Microsoft.Azure.Devices.Routing.Core.Endpoints
                     ICheckpointer checkpointer = snapshot[priority].Checkpointer;
 
                     IMessage storedMessage = await this.messageStore.Add(GetMessageQueueId(this.Endpoint.Id, priority), message, timeToLiveSecs);
-                    // BEARWASHERE -- Pass the metric here
-                    checkpointer.Propose(storedMessage, this.messageStore.GetQueueLength(this.Endpoint.Id));
+                    checkpointer.Propose(storedMessage);
+                    // BEARWASHERE -- Generate the metric here
+                    StoringAsyncEndpointExecutor.SetQueueLengthMetric((Checkpointer)checkpointer, this.messageStore.GetQueueLength(this.Endpoint.Id));
                     Events.AddMessageSuccess(this, storedMessage.Offset, priority, timeToLiveSecs);
                 }
 
@@ -164,8 +178,6 @@ namespace Microsoft.Azure.Devices.Routing.Core.Endpoints
 
                     // Create a message queue in the store for every priority we have
                     await this.messageStore.AddEndpoint(id);
-
-                    // BEARWASHERE -- Checkpoint creation
 
                     // Create a checkpointer and a FSM for every message queue
                     ICheckpointer checkpointer = await this.checkpointerFactory.CreateAsync(id, this.Endpoint.Id, priority);
