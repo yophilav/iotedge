@@ -126,6 +126,7 @@ namespace Microsoft.Azure.Devices.Edge.Test
                     builder.AddModule(filterFuncName, filterFuncImage)
                         .WithEnvironment(new[] { ("AZURE_FUNCTIONS_ENVIRONMENT", "Development") });
                     builder.GetModule(ModuleName.EdgeHub)
+                        .WithEnvironment(new[] { ("RUST_LOG", "debug") })
                         .WithDesiredProperties(new Dictionary<string, object>
                         {
                             ["routes"] = new
