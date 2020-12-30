@@ -110,10 +110,6 @@ jobs:
           $underlyingTag = $($(Get-Content $unberlyingFilePath | Select-String "ARG base_tag=") -split "=")[1]
           $imageFilePath = $pathPrefix + '/Dockerfile' | Resolve-path
           Set-Variable -Name "$($each.Item3.ToString())" -Value "$($($(Get-Content $imageFilePath | Select-String "ARG base_tag=") -split "=")[1])"
-          # $edgeAgentTag = $($(Get-Content $imageFilePath | Select-String "ARG base_tag=") -split "=")[1]
-          echo $(Get-Variable -Name "$($each.Item3.ToString())")
-          echo $(Get-Variable -Name "$($each.Item3)")
-
           Write-Output "$($each.Item2.ToString()):$(Get-Variable -Name "$($each.Item3.ToString())" -ValueOnly) <= $underlyingTag"
           Write-Output "##vso[task.setvariable variable=$($each.Item3.ToString())]$($each.Item3.ToString())"
         }
