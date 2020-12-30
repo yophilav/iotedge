@@ -102,7 +102,7 @@ jobs:
         echo "() = $(info)"
         # echo "Gettype = $($(info).GetType())"
 
-        echo $(serialize_info)
+        echo "$(serialize_info)"
         # $info =  [System.Management.Automation.PSSerializer]::Deserialize($(serialize_info))
 
         #$moduleInfo = $[info]
