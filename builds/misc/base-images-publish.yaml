@@ -127,7 +127,7 @@ jobs:
 
     - pwsh: |
         echo $(edgeAgentTagVersion)
-      DisplayName: test edgeAgentTagVersion
+      displayName: test edgeAgentTagVersion
 
     # - pwsh: |
     #     #TODO: Clean up these artifacts
