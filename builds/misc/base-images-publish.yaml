@@ -89,17 +89,19 @@ jobs:
           [Tuple]::Create("edge-modules/SimulatedTemperatureSensor","azureiotedge-module-base", "moduleTag"),
           [Tuple]::Create("test/modules/TestAnalyzer","azureiotedge-module-base-full", "fullModuleTag")
           ));
-        $serialize_info = [System.Management.Automation.PSSerializer]::Serialize($info);
-        Write-Output "##vso[task.setvariable variable=serialize_info]$serialize_info"
-
+        Write-Output "##vso[task.setvariable variable=info]$info"
         echo "Gettype: $info.GetType()"
+
+        # $serialize_info = [System.Management.Automation.PSSerializer]::Serialize($info);
+        # Write-Output "##vso[task.setvariable variable=serialize_info]$serialize_info"
       displayName: Get Predefined Info
       name: moduleInfo
 
     - pwsh: |
         # You can access the info using $(info)
-        echo "(serialize_info) = $(serialize_info)"
+        echo $(info)
         echo "Gettype: $($(info).GetType())"
+        echo access item1 $(info).Item1
 
         # $info =  [System.Management.Automation.PSSerializer]::Deserialize($(serialize_info))
         # echo "(info) = $info"
