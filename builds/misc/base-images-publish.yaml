@@ -89,14 +89,18 @@ jobs:
           [Tuple]::Create("edge-modules/SimulatedTemperatureSensor","azureiotedge-module-base", "moduleTag"),
           [Tuple]::Create("test/modules/TestAnalyzer","azureiotedge-module-base-full", "fullModuleTag")
           ));
-        Write-Output "##vso[task.setvariable variable=info]$info"
+        $serialize_info = [System.Management.Automation.PSSerializer]::Serialize($info);
+        Write-Output "##vso[task.setvariable variable=serialize_info]$serialize_info"
       displayName: Get Predefined Info
       name: moduleInfo
 
     - pwsh: |
         # You can access the info using $(info)
-        echo "(info) = $(info)"
-        echo "(info).Item1 = $($(info).Item1)"
+        echo "(serialize_info) = $(serialize_info)"
+        $info =  [System.Management.Automation.PSSerializer]::Deserialize($(serialize_info))
+        echo "(info) = $info"
+        
+        # echo "(info).Item1 = $($(info).Item1)"
 
         # TODO: Put this on a template
         # Get the version from each file location
