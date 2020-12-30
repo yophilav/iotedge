@@ -103,8 +103,7 @@ jobs:
         # echo "Gettype = $($(info).GetType())"
 
         echo "$(serialize_info)"
-        $hopefulString = '$(serialize_info)'
-        $info =  [System.Management.Automation.PSSerializer]::Deserialize($hopefulString)
+        $info =  [System.Management.Automation.PSSerializer]::Deserialize('$(serialize_info)')
 
         #$moduleInfo = $[info]
         #echo $moduleInfo
