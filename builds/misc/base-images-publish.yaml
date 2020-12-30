@@ -99,7 +99,7 @@ jobs:
 
     - pwsh: |
         # You can access the info using $(info)
-        echo $(info)
+        # echo $(info)
         echo "Gettype: $($(info).GetType())"
         echo access item1 $(info).Item1
 
