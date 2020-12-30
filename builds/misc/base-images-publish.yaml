@@ -94,8 +94,8 @@ jobs:
         # Note: Serialize -> Pass as DevOps var -> Deserialize to get an object
         $serialize_info = $($info | ConvertTo-Json).replace("`n"," ").replace("`r"," ")
         Write-Output "##vso[task.setvariable variable=serialize_info]$serialize_info"
-      displayName: Get Predefined Info
-      name: moduleInfo
+      displayName: Config
+      name: config
 
     - pwsh: |
         # Note: With in the same job, you can access $(info), but it would interpret $(info) as string similar to `echo "$info"` which is undesirable for our case, we want an Object.
@@ -112,8 +112,10 @@ jobs:
           Set-Variable -Name "$($each.Item3.ToString())" -Value "$($($(Get-Content $imageFilePath | Select-String "ARG base_tag=") -split "=")[1])"
           Write-Output "$($each.Item2.ToString()):$(Get-Variable -Name "$($each.Item3.ToString())" -ValueOnly) <= $underlyingTag"
           Write-Output "##vso[task.setvariable variable=$($each.Item3.ToString())]$(Get-Variable -Name "$($each.Item3.ToString())" -ValueOnly)"
-
-          echo "$($(Get-Variable -Name "$($each.Item3.ToString())" -ValueOnly).split("-")[0])"
+          Write-Output "##vso[task.setvariable variable=$($each.Item3.ToString())Version]$($(Get-Variable -Name "$($each.Item3.ToString())" -ValueOnly).split("-")[0])"
+          
+          #echo "$($(Get-Variable -Name "$($each.Item3.ToString())" -ValueOnly).split("-")[0])"
+          echo $(Get-Variable -Name "$($each.Item3.ToString())Version" -ValueOnly)
         }
       displayName: Overview ARM64
       name: overview
