@@ -104,7 +104,7 @@ jobs:
         # echo "Gettype = $($(info).GetType())"
 
         echo "(serialize_info) = $(serialize_info)"
-        $info = $(serialize_info) | ConvertFrom-Json
+        $info = '$(serialize_info)' | ConvertFrom-Json
         echo " "
         echo $info
 
