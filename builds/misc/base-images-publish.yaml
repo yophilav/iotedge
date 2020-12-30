@@ -89,24 +89,20 @@ jobs:
           [Tuple]::Create("edge-modules/SimulatedTemperatureSensor","azureiotedge-module-base", "moduleTag"),
           [Tuple]::Create("test/modules/TestAnalyzer","azureiotedge-module-base-full", "fullModuleTag")
           ));
-        # Write-Output "##vso[task.setvariable variable=info]$info"
-        # echo "Gettype: $($info.GetType())"
 
+        # Apparently the ##vso[task.setvariable ] crop of a string when it sees a newline charater, so chop them off before serialize
+        # Note: Serialize -> Pass as DevOps var -> Deserialize to get an object
         $serialize_info = $($info | ConvertTo-Json).replace("`n"," ").replace("`r"," ")
-        echo $serialize_info
         Write-Output "##vso[task.setvariable variable=serialize_info]$serialize_info"
       displayName: Get Predefined Info
       name: moduleInfo
 
     - pwsh: |
-        # You can access the info using $(info)
-        echo "() = $(info)"
-        # echo "Gettype = $($(info).GetType())"
-
-        echo "(serialize_info) = $(serialize_info)"
+        # Note: With in the same job, you can access $(info), but it would interpret $(info) as string similar to `echo "$info"` which is undesirable for our case, we want an Object.
+        # We worked around this by using the serialization & deserailzation
         $info = '$(serialize_info)' | ConvertFrom-Json
-        echo " "
-        echo $info
+        echo "info = $info"
+        echo "Item1 = $info.Item1"
 
         #$moduleInfo = $[info]
         #echo $moduleInfo
