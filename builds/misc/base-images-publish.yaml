@@ -91,14 +91,18 @@ jobs:
           ));
         $serialize_info = [System.Management.Automation.PSSerializer]::Serialize($info);
         Write-Output "##vso[task.setvariable variable=serialize_info]$serialize_info"
+
+        echo "Gettype: $info.GetType()"
       displayName: Get Predefined Info
       name: moduleInfo
 
     - pwsh: |
         # You can access the info using $(info)
         echo "(serialize_info) = $(serialize_info)"
-        $info =  [System.Management.Automation.PSSerializer]::Deserialize($(serialize_info))
-        echo "(info) = $info"
+        echo "Gettype: $($(info).GetType())"
+
+        # $info =  [System.Management.Automation.PSSerializer]::Deserialize($(serialize_info))
+        # echo "(info) = $info"
         
         # echo "(info).Item1 = $($(info).Item1)"
 
