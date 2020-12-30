@@ -105,7 +105,7 @@ jobs:
         # Get the version from each file location
         foreach ($each in $info)
         {
-          $pathPrefix = "$(Build.SourcesDirectory)/$each.Item1.ToString()/docker/$(os)/$(arch)"
+          $pathPrefix = "$(Build.SourcesDirectory)/$($each.Item1.ToString())/docker/$(os)/$(arch)"
           $unberlyingFilePath = $pathPrefix + '/base/Dockerfile' | Resolve-path
           $underlyingTag = $($(Get-Content $unberlyingFilePath | Select-String "ARG base_tag=") -split "=")[1]
           $imageFilePath = $pathPrefix + '/Dockerfile' | Resolve-path
