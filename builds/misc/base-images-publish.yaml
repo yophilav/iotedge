@@ -101,8 +101,9 @@ jobs:
         # Note: With in the same job, you can access $(info), but it would interpret $(info) as string similar to `echo "$info"` which is undesirable for our case, we want an Object.
         # We worked around this by using the serialization & deserailzation
         $info = '$(serialize_info)' | ConvertFrom-Json
-        echo "info = $info"
-        echo "Item1 = $info.Item1"
+        echo " "
+        echo "info = $($info)"
+        echo "Item1 = $($info.Item1)"
 
         #$moduleInfo = $[info]
         #echo $moduleInfo
