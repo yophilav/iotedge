@@ -94,9 +94,10 @@ jobs:
       name: moduleInfo
 
     - pwsh: |
-        # Let's make sure variable can be accessed here
-        echo "env:info = $env:info"
+        # You can access the info using $(info)
         echo "(info) = $(info)"
+        echo "(info.Item1) = $(info.Item1)"
+        echo "(info).Item1 = $(info).Item1"
 
         # TODO: Put this on a template
         # Get the version from each file location
