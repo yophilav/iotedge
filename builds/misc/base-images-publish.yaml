@@ -92,7 +92,8 @@ jobs:
         # Write-Output "##vso[task.setvariable variable=info]$info"
         # echo "Gettype: $($info.GetType())"
 
-        $serialize_info = [System.Management.Automation.PSSerializer]::Serialize($info);
+        $serialize_info = "$([System.Management.Automation.PSSerializer]::Serialize($info))"
+        echo $serialize_info
         Write-Output "##vso[task.setvariable variable=serialize_info]$serialize_info"
       displayName: Get Predefined Info
       name: moduleInfo
