@@ -24,36 +24,36 @@ jobs:
         # Get the version from each file location
         # EdgeAgent (azureiotedge-agent-base)
         $pathPrefix = '$(Build.SourcesDirectory)/edge-agent/docker/$(os)/$(arch)'
-        $unberlyingFilePath = '$pathPrefix/base/Dockerfile' | Resolve-path
+        $unberlyingFilePath = $pathPrefix + '/base/Dockerfile' | Resolve-path
         $underlyingTag = $($(Get-Content $unberlyingFilePath | Select-String "ARG base_tag=") -split "=")[1]
-        $imageFilePath = '$pathPrefix/Dockerfile' | Resolve-path
+        $imageFilePath = $pathPrefix + '/Dockerfile' | Resolve-path
         $edgeAgentTag = $($(Get-Content $imageFilePath | Select-String "ARG base_tag=") -split "=")[1]
         Write-Output "azureiotedge-agent-base:$edgeAgentTag <= $underlyingTag"
         Write-Output "##vso[task.setvariable variable=edgeAgentTag]$edgeAgentTag"
 
         # EdgeHub (azureiotedge-hub-base)
         $pathPrefix = '$(Build.SourcesDirectory)/edge-hub/docker/$(os)/$(arch)'
-        $unberlyingFilePath = '$pathPrefix/base/Dockerfile' | Resolve-path
+        $unberlyingFilePath = $pathPrefix + '/base/Dockerfile' | Resolve-path
         $underlyingTag = $($(Get-Content $unberlyingFilePath | Select-String "ARG base_tag=") -split "=")[1]
-        $imageFilePath = '$pathPrefix/Dockerfile' | Resolve-path
+        $imageFilePath = $pathPrefix + '/Dockerfile' | Resolve-path
         $edgeHubTag = $($(Get-Content $imageFilePath | Select-String "ARG base_tag=") -split "=")[1]
         Write-Output "azureiotedge-hub-base:$edgeHubTag <= $underlyingTag"
         Write-Output "##vso[task.setvariable variable=edgeHubTag]$edgeHubTag"
 
         # TempSensor (azureiotedge-module-base)
         $pathPrefix = '$(Build.SourcesDirectory)/edge-modules/SimulatedTemperatureSensor/docker/$(os)/$(arch)'
-        $unberlyingFilePath = '$pathPrefix/base/Dockerfile' | Resolve-path
+        $unberlyingFilePath = $pathPrefix + '/base/Dockerfile' | Resolve-path
         $underlyingTag = $($(Get-Content $unberlyingFilePath | Select-String "ARG base_tag=") -split "=")[1]
-        $imageFilePath = '$pathPrefix/Dockerfile' | Resolve-path
+        $imageFilePath = $pathPrefix + '/Dockerfile' | Resolve-path
         $moduleTag = $($(Get-Content $imageFilePath | Select-String "ARG base_tag=") -split "=")[1]
         Write-Output "azureiotedge-module-base:$moduleTag <= $underlyingTag"
         Write-Output "##vso[task.setvariable variable=moduleTag]$moduleTag"
 
         # Test Analyzer (azureiotedge-module-base-full)
         $pathPrefix = '$(Build.SourcesDirectory)/test/modules/TestAnalyzer/docker/$(os)/$(arch)'
-        $unberlyingFilePath = '$pathPrefix/base/Dockerfile' | Resolve-path
+        $unberlyingFilePath = $pathPrefix + '/base/Dockerfile' | Resolve-path
         $underlyingTag = $($(Get-Content $unberlyingFilePath | Select-String "ARG base_tag=") -split "=")[1]
-        $imageFilePath = '$pathPrefix/Dockerfile' | Resolve-path
+        $imageFilePath = $pathPrefix + '/Dockerfile' | Resolve-path
         $fullModuleTag = $($(Get-Content $imageFilePath | Select-String "ARG base_tag=") -split "=")[1]
         Write-Output "azureiotedge-module-base-full:$fullModuleTag <= $underlyingTag"
         Write-Output "##vso[task.setvariable variable=fullModuleTag]$fullModuleTag"
@@ -83,36 +83,36 @@ jobs:
         # Get the version from each file location
         # EdgeAgent (azureiotedge-agent-base)
         $pathPrefix = '$(Build.SourcesDirectory)/edge-agent/docker/$(os)/$(arch)'
-        $unberlyingFilePath = '$pathPrefix/base/Dockerfile' | Resolve-path
+        $unberlyingFilePath = $pathPrefix + '/base/Dockerfile' | Resolve-path
         $underlyingTag = $($(Get-Content $unberlyingFilePath | Select-String "ARG base_tag=") -split "=")[1]
-        $imageFilePath = '$pathPrefix/Dockerfile' | Resolve-path
+        $imageFilePath = $pathPrefix + '/Dockerfile' | Resolve-path
         $edgeAgentTag = $($(Get-Content $imageFilePath | Select-String "ARG base_tag=") -split "=")[1]
         Write-Output "azureiotedge-agent-base:$edgeAgentTag <= $underlyingTag"
         Write-Output "##vso[task.setvariable variable=edgeAgentTag]$edgeAgentTag"
 
         # EdgeHub (azureiotedge-hub-base)
         $pathPrefix = '$(Build.SourcesDirectory)/edge-hub/docker/$(os)/$(arch)'
-        $unberlyingFilePath = '$pathPrefix/base/Dockerfile' | Resolve-path
+        $unberlyingFilePath = $pathPrefix + '/base/Dockerfile' | Resolve-path
         $underlyingTag = $($(Get-Content $unberlyingFilePath | Select-String "ARG base_tag=") -split "=")[1]
-        $imageFilePath = '$pathPrefix/Dockerfile' | Resolve-path
+        $imageFilePath = $pathPrefix + '/Dockerfile' | Resolve-path
         $edgeHubTag = $($(Get-Content $imageFilePath | Select-String "ARG base_tag=") -split "=")[1]
         Write-Output "azureiotedge-hub-base:$edgeHubTag <= $underlyingTag"
         Write-Output "##vso[task.setvariable variable=edgeHubTag]$edgeHubTag"
 
         # TempSensor (azureiotedge-module-base)
         $pathPrefix = '$(Build.SourcesDirectory)/edge-modules/SimulatedTemperatureSensor/docker/$(os)/$(arch)'
-        $unberlyingFilePath = '$pathPrefix/base/Dockerfile' | Resolve-path
+        $unberlyingFilePath = $pathPrefix + '/base/Dockerfile' | Resolve-path
         $underlyingTag = $($(Get-Content $unberlyingFilePath | Select-String "ARG base_tag=") -split "=")[1]
-        $imageFilePath = '$pathPrefix/Dockerfile' | Resolve-path
+        $imageFilePath = $pathPrefix + '/Dockerfile' | Resolve-path
         $moduleTag = $($(Get-Content $imageFilePath | Select-String "ARG base_tag=") -split "=")[1]
         Write-Output "azureiotedge-module-base:$moduleTag <= $underlyingTag"
         Write-Output "##vso[task.setvariable variable=moduleTag]$moduleTag"
 
         # Test Analyzer (azureiotedge-module-base-full)
         $pathPrefix = '$(Build.SourcesDirectory)/test/modules/TestAnalyzer/docker/$(os)/$(arch)'
-        $unberlyingFilePath = '$pathPrefix/base/Dockerfile' | Resolve-path
+        $unberlyingFilePath = $pathPrefix + '/base/Dockerfile' | Resolve-path
         $underlyingTag = $($(Get-Content $unberlyingFilePath | Select-String "ARG base_tag=") -split "=")[1]
-        $imageFilePath = '$pathPrefix/Dockerfile' | Resolve-path
+        $imageFilePath = $pathPrefix + '/Dockerfile' | Resolve-path
         $fullModuleTag = $($(Get-Content $imageFilePath | Select-String "ARG base_tag=") -split "=")[1]
         Write-Output "azureiotedge-module-base-full:$fullModuleTag <= $underlyingTag"
         Write-Output "##vso[task.setvariable variable=fullModuleTag]$fullModuleTag"
