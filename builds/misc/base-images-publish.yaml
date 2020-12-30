@@ -92,7 +92,7 @@ jobs:
         # Write-Output "##vso[task.setvariable variable=info]$info"
         # echo "Gettype: $($info.GetType())"
 
-        $serialize_info = $info | ConvertTo-Json
+        $serialize_info = $($info | ConvertTo-Json).replace("`n",", ").replace("`r",", ")
         echo $serialize_info
         Write-Output "##vso[task.setvariable variable=serialize_info]$serialize_info"
       displayName: Get Predefined Info
