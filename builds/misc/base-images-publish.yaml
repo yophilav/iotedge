@@ -101,6 +101,10 @@ jobs:
         # You can access the info using $(info)
         echo "() = $(info)"
         echo "[] = $[info]"
+
+        $moduleInfo = $[info]
+        echo $moduleInfo
+
         # echo "Gettype: $($(info).GetType())"
         # echo access item1 $(info).Item1
 
