@@ -96,7 +96,7 @@ jobs:
     - pwsh: |
         # Let's make sure variable can be accessed here
         echo "env:info = $env:info"
-        echo "$(info)"
+        echo "(info) = $(info)"
 
         # TODO: Put this on a template
         # Get the version from each file location
