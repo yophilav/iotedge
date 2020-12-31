@@ -141,7 +141,7 @@ jobs:
           Copy-Item $artifactLocale -Destination "$filePath"
 
           $isSucceeded = $(if ([System.IO.File]::Exists($filePath)) {"Succeeded"} else {"Failed"})
-          echo "$filePath: $isSucceeded"
+          echo "$filePath : $isSucceeded"
         }
       displayName: Setup librocksdb.so
 
@@ -156,7 +156,7 @@ jobs:
           Remove-Item $filePath -ErrorAction Ignore
 
           $isSucceeded = $(if (![System.IO.File]::Exists($filePath)) {"Succeeded"} else {"Failed"})
-          echo "$filePath: $isSucceeded"
+          echo "$filePath : $isSucceeded"
         }
       displayName: Remove librocksdb.so
 
