@@ -4,7 +4,7 @@ steps:
     $info = '$(serialize_info)' | ConvertFrom-Json
     foreach ($each in $info)
     {
-      echo "first = $($($each.Item3.ToString())Version)"
+      echo "first = $($($each.Item3.ToString()) + "Version")"
       echo "second = $(edgeAgentTagVersion)"
       echo "thrid = $($each.Item3.ToString())"
 
