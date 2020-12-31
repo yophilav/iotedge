@@ -78,7 +78,6 @@ jobs:
       os: linux
       arch: arm64v8
 
-
     steps:
     - pwsh: |
         $info = New-Object System.Collections.ArrayList
@@ -122,12 +121,7 @@ jobs:
 
     - template: ../e2e/templates/e2e-clean-directory.yaml
 
-    # - pwsh: |
-    #     echo $(edgeAgentTagVersion)
-    #   displayName: test edgeAgentTagVersion
-
     - pwsh: |
-        #TODO: Clean up these artifacts
         $artifactLocale = "$(Build.SourcesDirectory)/librocksdb.so"
         Invoke-WebRequest -Uri $("https://edgebuild.blob.core.windows.net/librocksdb/librocksdb.so.$(arch)") -OutFile $artifactLocale
 
@@ -146,6 +140,16 @@ jobs:
       displayName: Setup librocksdb.so
 
     - pwsh: |
+        $isNoModuleRunning = [string]::IsNullOrEmpty($(docker ps -aq))
+        if (!$isNoModuleRunning)
+        {
+          docker stop $(docker ps -aq)
+        }
+
+        docker system prune --volumes -af
+      displayName: Clear cached docker images
+
+    - pwsh: |
         $artifactLocale = "$(Build.SourcesDirectory)/librocksdb.so"
         Remove-Item $artifactLocale -ErrorAction Ignore
 
@@ -159,4 +163,3 @@ jobs:
           echo "$filePath : $isSucceeded"
         }
       displayName: Remove librocksdb.so
-
