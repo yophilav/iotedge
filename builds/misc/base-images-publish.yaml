@@ -78,6 +78,7 @@ jobs:
       os: linux
       arch: arm64v8
 
+    steps:
     - template: templates/base-image-publish/base-image-config.yaml
 
     # steps:
