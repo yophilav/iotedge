@@ -23,7 +23,7 @@ steps:
     for ( $idx=0; $idx -lt $info.count; $idx++ )
     {
       $eachInfo = $info[$idx]
-      $buildCommand = "sh -c ""$scriptPath"" -d ""$($eachInfo.Item1.ToString())"" -i ""$($eachInfo.Item2.ToString())"" -v ""$versionTags[$idx]"" "
+      $buildCommand = "sh -c ""$scriptPath"" -d ""$($eachInfo.Item1.ToString())"" -i ""$($eachInfo.Item2.ToString())"" -v ""$($versionTags[$idx])"" "
       echo "Command: $buildCommand"
       # BEARWASHERE -- Don't run this unless you really want to release.
       # $buildCommand
