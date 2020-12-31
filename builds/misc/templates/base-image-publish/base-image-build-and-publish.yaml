@@ -4,7 +4,7 @@ steps:
     $info = '$(serialize_info)' | ConvertFrom-Json
     foreach ($each in $info)
     {
-      $buildCommand = "sh -c $scriptPath -d $($each.Item1.ToString()) -i $($each.Item2.ToString()) -v $(Get-Variable -Name "$($env:"$($each.Item3.ToString())Version")" -ValueOnly) "
+      $buildCommand = "sh -c $scriptPath -d $($each.Item1.ToString()) -i $($each.Item2.ToString()) -v $($env:"$($each.Item3.ToString())Version")"
       echo "Command: $buildCommand"
       # BEARWASHERE -- Don't run this unless you really want to release.
       # $buildCommand
