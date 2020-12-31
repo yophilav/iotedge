@@ -1,16 +1,23 @@
 steps:
 - pwsh: |
+    # Unfortunately there is no way to create a variable name (as a string) in pwsh, pass that to DevOps pipeline, and have it evaluates the value of the variable
+    # Since we know the variable names, we can hard-code variables name, and access them this way.
+    # This list must have the same version ordering as base-image-config.yaml
+    $versionTags = New-Object System.Collections.ArrayList
+    $versionTags.AddRange((
+      "$(edgeAgentTagVersion)",
+      "$(edgeHubTagVersion)",
+      "$(moduleTagVersion)",
+      "$(fullModuleTagVersion)"
+    ));
+
+    echo $versionTags
+    echo "dep = $(dependencies.linux_arm64.outputs['edgeAgentTagVersion'])"
+
     $scriptPath = "$(Build.SourcesDirectory)/scripts/linux/createArmBase.sh"
     $info = '$(serialize_info)' | ConvertFrom-Json
     foreach ($each in $info)
     {
-      # echo "first = $($($each.Item3.ToString()) + "Version")"
-      echo "second = $(edgeAgentTagVersion)"
-      echo "thrid = $($each.Item3.ToString())"
-      echo "thrid2 = $[$each.Item3.ToString()]"
-      echo "forth = $($(Get-Variable -Name "$($each.Item3.ToString())" -ValueOnly).split("-")[0])"
-      echo "fifth = $(Get-Variable -Name "$($each.Item3.ToString())" -ValueOnly)"
-
       # $buildCommand = "sh -c $scriptPath -d $($each.Item1.ToString()) -i $($each.Item2.ToString()) -v "$($each.Item3.ToString())Version" "
       echo "Command: $buildCommand"
       # BEARWASHERE -- Don't run this unless you really want to release.
