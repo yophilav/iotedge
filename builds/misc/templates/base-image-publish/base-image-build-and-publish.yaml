@@ -7,7 +7,7 @@ steps:
       # echo "first = $($($each.Item3.ToString()) + "Version")"
       echo "second = $(edgeAgentTagVersion)"
       echo "thrid = $($each.Item3.ToString())"
-      echo "forth = $(Get-Variable -Name "$($each.Item3.ToString())" -ValueOnly)"
+      echo "forth = $(Get-Variable -Name "$($each.Item3.ToString())Version" -ValueOnly)"
 
       # $buildCommand = "sh -c $scriptPath -d $($each.Item1.ToString()) -i $($each.Item2.ToString()) -v "$($each.Item3.ToString())Version" "
       echo "Command: $buildCommand"
