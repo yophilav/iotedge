@@ -11,14 +11,17 @@ steps:
       "$(fullModuleTagVersion)"
     ));
 
-    echo $versionTags
-    echo "dep = $[dependencies.linux_arm64.outputs['edgeAgentTagVersion']]"
+    #TODO: Verify the two vectors have the same lenght
 
     $scriptPath = "$(Build.SourcesDirectory)/scripts/linux/createArmBase.sh"
     $info = '$(serialize_info)' | ConvertFrom-Json
-    foreach ($each in $info)
+    for ($idx=0; $idx -lt $info.count; $idx++)
     {
-      # $buildCommand = "sh -c $scriptPath -d $($each.Item1.ToString()) -i $($each.Item2.ToString()) -v "$($each.Item3.ToString())Version" "
+      $eachInfo = $info[$idx]
+
+      echo "versionTag = $($versionTags[$idx])"
+
+      #$buildCommand = "sh -c $scriptPath -d $($eachInfo.Item1.ToString()) -i $($eachInfo.Item2.ToString()) -v $versionTags[$idx] "
       echo "Command: $buildCommand"
       # BEARWASHERE -- Don't run this unless you really want to release.
       # $buildCommand
