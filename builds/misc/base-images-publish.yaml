@@ -79,8 +79,6 @@ jobs:
       arch: arm64v8
 
     - template: /templates/base-image-publish/base-image-config.yaml
-      displayName: Config
-      name: config
 
     # steps:
     # - pwsh: |
