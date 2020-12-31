@@ -129,7 +129,7 @@ jobs:
     - pwsh: |
         #TODO: Clean up these artifacts
         $artifactLocale = "$(Build.SourcesDirectory)/librocksdb.so"
-        Invoke-WebRequest -Uri $("https://edgebuild.blob.core.windows.net/librocksdb/librocksdb.so." + $arch) -OutFile $artifactLocale
+        Invoke-WebRequest -Uri $("https://edgebuild.blob.core.windows.net/librocksdb/librocksdb.so.$(arch)") -OutFile $artifactLocale
 
         $info = '$(serialize_info)' | ConvertFrom-Json
 
