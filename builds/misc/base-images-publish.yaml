@@ -178,7 +178,7 @@ jobs:
     #     }
     #   displayName: Build and Publish Base Images
 
-    - template: templates/base-image-publish/base-image-remove-librocksdb
+    - template: templates/base-image-publish/base-image-remove-librocksdb.yaml
     # - pwsh: |
     #     $artifactLocale = "$(Build.SourcesDirectory)/librocksdb.so"
     #     Remove-Item $artifactLocale -ErrorAction Ignore
