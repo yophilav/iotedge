@@ -158,6 +158,22 @@ jobs:
       env:
         DOCKERIO_PASS: $(dockerio.password)
 
+    - bash: |
+        $scriptPath = "$(Build.SourcesDirectory)/scripts/linux/createArmBase.sh"
+        $info = '$(serialize_info)' | ConvertFrom-Json
+        foreach ($each in $info)
+        {
+          echo $($each.Item1.ToString())
+          echo $($each.Item2.ToString())
+          echo $($each.Item3.ToString())
+          echo " "
+          echo "sh -c $scriptPath -d $($each.Item1.ToString()) -i $($each.Item2.ToString()) -v $($(Get-Variable -Name "$($each.Item3.ToString())Version" -ValueOnly)"
+          # sh -c $scriptPath -d $($each.Item1.ToString()) -i $($each.Item2.ToString()) -v $($(Get-Variable -Name "$($each.Item3.ToString())Version" -ValueOnly)
+          echo " "
+          echo " "
+        }
+      displayName: Build and Publish Base Images
+
     - pwsh: |
         $artifactLocale = "$(Build.SourcesDirectory)/librocksdb.so"
         Remove-Item $artifactLocale -ErrorAction Ignore
