@@ -12,7 +12,7 @@ steps:
     ));
 
     echo $versionTags
-    echo "dep = $(dependencies.linux_arm64.outputs['edgeAgentTagVersion'])"
+    echo "dep = $[dependencies.linux_arm64.outputs['edgeAgentTagVersion']]"
 
     $scriptPath = "$(Build.SourcesDirectory)/scripts/linux/createArmBase.sh"
     $info = '$(serialize_info)' | ConvertFrom-Json
