@@ -167,8 +167,7 @@ jobs:
           echo $($each.Item2.ToString())
           echo $($each.Item3.ToString())
           echo " "
-          echo "sh -c $scriptPath -d $($each.Item1.ToString()) -i $($each.Item2.ToString()) -v $($(Get-Variable -Name "$($each.Item3.ToString())Version" -ValueOnly))"
-          # sh -c $scriptPath -d $($each.Item1.ToString()) -i $($each.Item2.ToString()) -v $($(Get-Variable -Name "$($each.Item3.ToString())Version" -ValueOnly)
+          echo "sh -c $scriptPath -d $($each.Item1.ToString()) -i $($each.Item2.ToString()) -v $($($each.Item3.ToString())Version) "
           echo " "
           echo " "
         }
