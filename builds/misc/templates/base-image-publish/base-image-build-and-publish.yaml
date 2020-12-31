@@ -11,24 +11,21 @@ steps:
       "$(fullModuleTagVersion)"
     ));
 
-    #TODO: Verify the two vectors have the same lenght
-
     $scriptPath = "$(Build.SourcesDirectory)/scripts/linux/createArmBase.sh"
     $info = '$(serialize_info)' | ConvertFrom-Json
-    for ($idx=0; $idx -lt $info.count; $idx++)
+
+    if ($info.count -ne $versionTags.count)
+    {
+      echo '$info and $versionTags must have the same count.'
+      exit -1;
+    }
+
+    for ( $idx=0; $idx -lt $info.count; $idx++ )
     {
       $eachInfo = $info[$idx]
-
-      echo "versionTag = $($versionTags[$idx])"
-
-      #$buildCommand = "sh -c $scriptPath -d $($eachInfo.Item1.ToString()) -i $($eachInfo.Item2.ToString()) -v $versionTags[$idx] "
+      $buildCommand = "sh -c ""$scriptPath"" -d ""$($eachInfo.Item1.ToString())"" -i ""$($eachInfo.Item2.ToString())"" -v ""$versionTags[$idx]"" "
       echo "Command: $buildCommand"
       # BEARWASHERE -- Don't run this unless you really want to release.
       # $buildCommand
     }
   displayName: Build and Publish Base Images
-  env:
-    edgeAgentTagVersion: $(edgeAgentTagVersion)
-    edgeHubTagVersion: $(edgeHubTagVersion)
-    moduleTagVersion: $(moduleTagVersion)
-    fullModuleTagVersion: $(fullModuleTagVersion)
