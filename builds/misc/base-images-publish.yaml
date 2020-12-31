@@ -158,7 +158,7 @@ jobs:
       env:
         DOCKERIO_PASS: $(dockerio.password)
 
-    - bash: |
+    - pwsh: |
         $scriptPath = "$(Build.SourcesDirectory)/scripts/linux/createArmBase.sh"
         $info = '$(serialize_info)' | ConvertFrom-Json
         foreach ($each in $info)
