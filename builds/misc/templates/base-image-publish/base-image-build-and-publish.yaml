@@ -10,3 +10,8 @@ steps:
       # $buildCommand
     }
   displayName: Build and Publish Base Images
+  env:
+    edgeAgentTagVersion: $(edgeAgentTagVersion)
+    edgeHubTagVersion: $(edgeHubTagVersion)
+    moduleTagVersion: $(moduleTagVersion)
+    fullModuleTagVersion: $(fullModuleTagVersion)
