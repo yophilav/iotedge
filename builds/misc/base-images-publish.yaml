@@ -78,23 +78,27 @@ jobs:
       os: linux
       arch: arm64v8
 
-    steps:
-    - pwsh: |
-        $info = New-Object System.Collections.ArrayList
-        # Tuple format:  (ModuleRepoPath,                           BaseImageName,                   ReturningVstsVar)
-        $info.AddRange((
-          [Tuple]::Create("edge-agent",                             "azureiotedge-agent-base",       "edgeAgentTag"),
-          [Tuple]::Create("edge-hub",                               "azureiotedge-hub-base",         "edgeHubTag"),
-          [Tuple]::Create("edge-modules/SimulatedTemperatureSensor","azureiotedge-module-base",      "moduleTag"),
-          [Tuple]::Create("test/modules/TestAnalyzer",              "azureiotedge-module-base-full", "fullModuleTag")
-          ));
-
-        # Apparently the ##vso[task.setvariable ] crop of a string when it sees a newline charater, so chop them off before serialize
-        # Note: Serialize -> Pass as DevOpsVar -> Deserialize to get an object
-        $serialize_info = $($info | ConvertTo-Json).replace("`n"," ").replace("`r"," ")
-        Write-Output "##vso[task.setvariable variable=serialize_info]$serialize_info"
+    - template: /templates/base-image-publish/base-image-config.yaml
       displayName: Config
       name: config
+
+    # steps:
+    # - pwsh: |
+    #     $info = New-Object System.Collections.ArrayList
+    #     # Tuple format:  (ModuleRepoPath,                           BaseImageName,                   ReturningVstsVar)
+    #     $info.AddRange((
+    #       [Tuple]::Create("edge-agent",                             "azureiotedge-agent-base",       "edgeAgentTag"),
+    #       [Tuple]::Create("edge-hub",                               "azureiotedge-hub-base",         "edgeHubTag"),
+    #       [Tuple]::Create("edge-modules/SimulatedTemperatureSensor","azureiotedge-module-base",      "moduleTag"),
+    #       [Tuple]::Create("test/modules/TestAnalyzer",              "azureiotedge-module-base-full", "fullModuleTag")
+    #       ));
+
+    #     # Apparently the ##vso[task.setvariable ] crop of a string when it sees a newline charater, so chop them off before serialize
+    #     # Note: Serialize -> Pass as DevOpsVar -> Deserialize to get an object
+    #     $serialize_info = $($info | ConvertTo-Json).replace("`n"," ").replace("`r"," ")
+    #     Write-Output "##vso[task.setvariable variable=serialize_info]$serialize_info"
+    #   displayName: Config
+    #   name: config
 
     - pwsh: |
         # Note: With in the same job, you can access $(info), but it would interpret $(info) as string similar to `echo "$info"` which is undesirable for our case, we want an Object.
