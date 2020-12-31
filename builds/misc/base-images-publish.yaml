@@ -163,13 +163,10 @@ jobs:
         $info = '$(serialize_info)' | ConvertFrom-Json
         foreach ($each in $info)
         {
-          echo $($each.Item1.ToString())
-          echo $($each.Item2.ToString())
-          echo $($each.Item3.ToString())
-          echo " "
-          echo "sh -c $scriptPath -d $($each.Item1.ToString()) -i $($each.Item2.ToString()) -v $("$($each.Item3.ToString())Version") "
-          echo " "
-          echo " "
+          $buildCommand = "sh -c $scriptPath -d $($each.Item1.ToString()) -i $($each.Item2.ToString()) -v $("$($each.Item3.ToString())Version")"
+          echo "Command: $buildCommand"
+          # BEARWASHERE -- Don't run this unless you really want to release.
+          # $buildCommand
         }
       displayName: Build and Publish Base Images
 
