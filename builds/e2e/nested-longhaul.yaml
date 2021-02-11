@@ -3,6 +3,36 @@ pr: none
 
 variables:
   NugetSecurityAnalysisWarningLevel: warn
+  images.artifact.name.linux: 'core-linux'
+  vsts.project: $(System.TeamProjectId)
+  # Variable defined in VSTS
+  #azure.keyVault: ''
+  #azure.subscription: ''
+  #edgelet.package.build: <edglet package build id>
+  #images.build: <images build id>
+  #pool.name: ''
+  #container.registry: ''
+  #snitch.storage.account: ''
+  # Variables settable at queue time
+  #test.startDelay.arm
+  #test.startDelay.amd
+  #edgelet.package.branchName
+  #images.branchName
+  #loadGen.message.frequency.amd64: 'xx:xx:xx.xx'
+  #loadGen.message.frequency.arm32v7: 'xx:xx:xx.xx'
+  #loadGen.message.frequency.arm64v8: 'xx:xx:xx.xx'
+  #run.linux.amd64.moby: 'true/false'
+  #run.linux.arm32v7.moby: 'true/false'
+  #run.linux.arm64v8.docker: 'true/false'
+  #longhaul.desiredModulesToRestartCSV: ''
+  #longhaul.restartIntervalInMins: ''
+  #twinTester.twinUpdateSize: ''
+  #twinTester.twinUpdateFrequency: 'xx:xx:xx.xx' 
+  #twinTester.twinUpdateFailureThreshold: 'xx:xx:xx.xx'
+  #twinTester.edgeHubRestartFailureTolerance: 'xx:xx:xx.xx'
+  #metricsCollector.metricsEndpointsCSV
+  #metricsCollector.scrapeFrequencyInSecs: 'xx:xx:xx.xx'
+  #metricsCollector.uploadTarget
 
 resources:
   pipelines:
