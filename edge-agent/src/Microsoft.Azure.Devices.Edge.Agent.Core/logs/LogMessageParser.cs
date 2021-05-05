@@ -29,8 +29,7 @@ namespace Microsoft.Azure.Devices.Edge.Agent.Core.Logs
     public class LogMessageParser : ILogMessageParser
     {
         const int DefaultLogLevel = 6;
-        const string LogRegexPattern = @"^(<(?<logLevel>\d)>)?\s*((?<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}.\d{3}\s[+-]\d{2}:\d{2})\s)?\s*(?<logtext>.*)";
-        const string timestampRegexPattern = @"^\[((?<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}.\d{3})\s(?<logType>\D{3})\])";
+        const string LogRegexPattern = @"^((?<dockerTimestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{9}Z))?\s*(<(?<logLevel>\d)>)?\s*((?<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}.\d{3}\s[+-]\d{2}:\d{2})\s)?\s*(?<logtext>.*)";
 
         readonly string iotHubName;
         readonly string deviceId;
@@ -49,6 +48,7 @@ namespace Microsoft.Azure.Devices.Edge.Agent.Core.Logs
             string stream = GetStream(arg[0]);
             ByteString payload = arg.Slice(8);
             string payloadString = payload.ToString(Encoding.UTF8);
+
             (int logLevel, Option<DateTime> timeStamp, string logText) = ParseLogText(payloadString);
             var moduleLogMessage = new ModuleLogMessageData(iotHubName, deviceId, moduleId, stream, logLevel, timeStamp, logText, arg, payloadString);
             return moduleLogMessage;
@@ -59,14 +59,24 @@ namespace Microsoft.Azure.Devices.Edge.Agent.Core.Logs
         internal static (int logLevel, Option<DateTime> timeStamp, string text) ParseLogText(string value)
         {
             var regex = new Regex(LogRegexPattern);
+
             var match = regex.Match(value);
             int logLevel = DefaultLogLevel;
             string text = value;
             Option<DateTime> timeStamp = Option.None<DateTime>();
             if (match.Success)
             {
+                var dtsg = match.Groups["dockerTimestamp"];
+                if (dtsg?.Length > 0)
+                {
+                    if (DateTime.TryParse(dtsg.Value, out DateTime dt))
+                    {
+                        timeStamp = Option.Some(dt);
+                    }
+                }
+
                 var tsg = match.Groups["timestamp"];
-                if (tsg?.Length > 0)
+                if (tsg?.Length > 0 && !timeStamp.HasValue)
                 {
                     if (DateTime.TryParse(tsg.Value, out DateTime dt))
                     {
@@ -85,22 +95,6 @@ namespace Microsoft.Azure.Devices.Edge.Agent.Core.Logs
                 if (textGroup?.Length > 0)
                 {
                     text = textGroup.Value;
-
-                    if (!timeStamp.HasValue)
-                    {
-                        // BEARWASHERE -- 
-                        // If a module does not follow the prescribed format, use the timestamp that Docker provides for the log line.
-                        var timestampRegex = new Regex(timestampRegexPattern);
-                        var timestampMatch = timestampRegex.Match(text);
-                        var tsm = timestampMatch.Groups["timestamp"];
-                        if (tsm?.Length > 0)
-                        {
-                            if (DateTime.TryParse(tsm.Value, out DateTime dt))
-                            {
-                                timeStamp = Option.Some(dt);
-                            }
-                        }
-                    }
                 }
             }
 
